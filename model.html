@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMind | AI健康助手</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22d3ee',
+                        secondary: '#0891b2',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2129&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+        }
+        
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        /* 隐藏滚动条但允许滚动 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* 图标颜色调整 */
+        .icon-light {
+            filter: invert(100%) brightness(1.5);
+        }
+        
+        .icon-primary {
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(155deg) brightness(100%);
+        }
+        
+        .chat-message {
+            max-width: 80%;
+        }
+        
+        .chat-message.user {
+            margin-left: auto;
+        }
+        
+        .chat-message.assistant {
+            margin-right: auto;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 12px;
+            width: fit-content;
+            margin-right: auto;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #22d3ee;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
+        /* 思考过程样式 */
+        .reasoning-content {
+            background: rgba(34, 211, 238, 0.05);
+            border-left: 3px solid rgba(34, 211, 238, 0.5);
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: pre-wrap;
+        }
+        
+        /* AI回答内容样式 */
+        .ai-content {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="text-light">
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <div class="glass-dark w-64 h-full flex flex-col">
+            <div class="p-6 flex items-center space-x-3 border-b border-white/10">
+                <div class="hexagon bg-primary w-10 h-10 flex items-center justify-center">
+                    <img src="icons/activity.svg" class="w-6 h-6 text-white icon-light" alt="Logo">
+                </div>
+                <h1 class="text-xl font-bold text-primary neon-glow">HealthMind</h1>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Dashboard">
+                            <span>健康仪表盘</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="healthdata.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/alarm-clock.svg" class="w-5 h-5 mr-3 icon-light" alt="Health Data">
+                            <span>健康数据</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="activity.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 mr-3 icon-light" alt="Activity">
+                            <span>活动管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="diet.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/aperture.svg" class="w-5 h-5 mr-3 icon-light" alt="Diet">
+                            <span>饮食管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="sleep.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/alarm-clock-off.svg" class="w-5 h-5 mr-3 icon-light" alt="Sleep">
+                            <span>睡眠管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="community.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/align-center.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>健康社区</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="model.html" class="flex items-center p-3 rounded-lg bg-primary/20 neon-border">
+                            <img src="icons/square-activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>AI健康助手</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-white/10">
+                <div class="glass-card p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                        <div class="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center mr-3">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="User">
+                        </div>
+                        <div>
+                            <h3 class="font-medium username-display"></h3>
+                            <p class="text-xs text-white/60">健康会员</p>
+                        </div>
+                    </div>
+                    <button class="w-full mt-2 py-1 rounded-lg bg-white/10 text-xs hover:bg-white/20 transition logout-btn">
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 p-6 overflow-y-auto hide-scrollbar">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-1">AI健康助手</h1>
+                    <p class="text-white/60">您的专属健康顾问，随时为您解答健康问题</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="glass p-2 rounded-lg" id="clearChatBtn">
+                        <img src="icons/clapperboard.svg" class="w-5 h-5 icon-primary" alt="Clear Chat">
+                    </button>
+                    <button class="glass p-2 rounded-lg">
+                        <img src="icons/align-justify.svg" class="w-5 h-5 icon-primary" alt="Settings">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 聊天区域 -->
+            <div class="glass-card rounded-xl p-5 mb-8 h-[calc(110vh-200px)] flex flex-col">
+                <!-- 聊天记录 -->
+                <div class="flex-1 overflow-y-auto mb-4 space-y-4" id="chatContainer">
+                    <div class="chat-message assistant">
+                        <div class="glass p-4 rounded-lg">
+                            <div class="flex items-start mb-2">
+                                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                    <img src="icons/bot.svg" class="w-4 h-4 icon-primary" alt="AI">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium mb-1">AI健康助手</h4>
+                                    <p class="text-sm text-white/70">您好！我是您的AI健康助手。我可以为您提供健康建议、解答健康问题，以及帮助您更好地管理健康。请问有什么我可以帮您的吗？</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 输入区域 -->
+                <div class="glass p-4 rounded-lg">
+                    <div class="flex space-x-4">
+                        <input type="text" 
+                               class="flex-1 bg-white/5 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" 
+                               placeholder="输入您的问题..."
+                               id="chatInput"
+                        >
+                        <button class="px-6 py-2 bg-primary rounded-lg text-sm font-medium hover:bg-secondary transition" id="sendBtn">
+                            发送
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContainer = document.getElementById('chatContainer');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const quickQuestions = document.querySelectorAll('.quick-question');
+        
+        // 魔塔社区API配置
+        const API_URL = 'https://api-inference.modelscope.cn/v1/chat/completions';
+        const API_KEY = '7da4f6fe-d652-4327-a6fc-b1b65dffd342'; // 魔塔社区API密钥
+        const MODEL_ID = 'deepseek-ai/DeepSeek-R1'; // 模型ID
+        
+        // 聊天历史
+        let chatHistory = [
+            {
+                role: "system",
+                content: "你是一个专业的医疗健康助手，可以为用户提供健康建议和医疗咨询。请注意，你提供的是一般性的健康建议，不能替代专业医生的诊断。请在回答时使用段落格式，避免使用星号等特殊符号作为强调，而是使用自然语言表达。每个段落之间应当有明确的分隔。"
+            }
+        ];
+        
+        // 初始化时将欢迎消息添加到聊天历史
+        chatHistory.push({
+            role: "assistant",
+            content: "您好！我是您的AI健康助手。\n\n我可以为您提供健康建议、解答健康问题，以及帮助您更好地管理健康。\n\n请问有什么我可以帮您的吗？"
+        });
+        
+        // 添加消息到聊天界面
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'assistant'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="glass p-4 rounded-lg bg-primary/10">
+                        <p class="text-sm">${content}</p>
+                    </div>
+                `;
+                
+                // 添加到聊天历史
+                chatHistory.push({
+                    role: "user",
+                    content: content
+                });
+            } else {
+                // 将内容中的换行符转换为HTML段落
+                const formattedContent = content
+                    .split('\n\n')
+                    .filter(para => para.trim() !== '')
+                    .map(para => `<p class="mb-2">${para}</p>`)
+                    .join('');
+                
+                messageDiv.innerHTML = `
+                    <div class="glass p-4 rounded-lg">
+                        <div class="flex items-start mb-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                <img src="icons/bot.svg" class="w-4 h-4 icon-primary" alt="AI">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium mb-1">AI健康助手</h4>
+                                <div class="text-sm text-white/70 ai-content">${formattedContent}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加到聊天历史
+                chatHistory.push({
+                    role: "assistant",
+                    content: content
+                });
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return messageDiv;
+        }
+        
+        // 创建流式响应的消息容器
+        function createStreamingMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message assistant';
+            
+            messageDiv.innerHTML = `
+                <div class="glass p-4 rounded-lg">
+                    <div class="flex items-start mb-2">
+                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                            <img src="icons/bot.svg" class="w-4 h-4 icon-primary" alt="AI">
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium mb-1">AI健康助手</h4>
+                            <div class="reasoning-content hidden"></div>
+                            <div class="text-sm text-white/70 ai-content streaming-content"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return {
+                streamingContent: messageDiv.querySelector('.streaming-content'),
+                reasoningContent: messageDiv.querySelector('.reasoning-content')
+            };
+        }
+        
+        // 显示输入中指示器
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatContainer.appendChild(indicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return indicator;
+        }
+        
+        // 格式化AI回复内容
+        function formatAIResponse(text) {
+            // 替换星号强调为普通文本
+            let formatted = text.replace(/\*\*(.*?)\*\*/g, '$1');
+            formatted = formatted.replace(/\*(.*?)\*/g, '$1');
+            
+            // 确保段落之间有空行
+            formatted = formatted.replace(/\n(?!\n)/g, '\n\n');
+            
+            return formatted;
+        }
+        
+        // 发送消息到魔塔社区API
+        async function sendMessage(message) {
+            if (!message.trim()) return;
+            
+            // 添加用户消息到界面
+            addMessage(message, true);
+            chatInput.value = '';
+            
+            // 显示输入中指示器
+            const indicator = showTypingIndicator();
+            
+            try {
+                // 创建流式响应的容器
+                indicator.remove();
+                const { streamingContent, reasoningContent } = createStreamingMessage();
+                let fullResponse = '';
+                let fullReasoning = '';
+                
+                // 准备请求数据
+                const requestData = {
+                    model: MODEL_ID,
+                    messages: chatHistory.filter(msg => msg.role !== "assistant" || chatHistory.indexOf(msg) === 1),
+                    stream: true,
+                    temperature: 0.7
+                };
+                
+                // 发送请求
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API响应错误: ${response.status} - ${errorText}`);
+                    throw new Error(`API响应错误: ${response.status}`);
+                }
+                
+                // 处理流式响应
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let isReasoningDone = false;
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data:')) {
+                            try {
+                                const jsonData = JSON.parse(line.substring(5).trim());
+                                
+                                // 处理思考内容
+                                if (jsonData.choices && jsonData.choices[0].delta && jsonData.choices[0].delta.reasoning_content) {
+                                    const reasoningChunk = jsonData.choices[0].delta.reasoning_content;
+                                    fullReasoning += reasoningChunk;
+                                    reasoningContent.textContent = fullReasoning;
+                                    reasoningContent.classList.remove('hidden');
+                                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                                }
+                                
+                                // 处理最终回答
+                                if (jsonData.choices && jsonData.choices[0].delta && jsonData.choices[0].delta.content) {
+                                    if (!isReasoningDone && fullReasoning) {
+                                        isReasoningDone = true;
+                                        reasoningContent.innerHTML = `<strong>思考过程:</strong>\n${fullReasoning}`;
+                                    }
+                                    
+                                    const content = jsonData.choices[0].delta.content;
+                                    fullResponse += content;
+                                    
+                                    // 格式化并显示回复
+                                    const formattedResponse = formatAIResponse(fullResponse);
+                                    const htmlContent = formattedResponse
+                                        .split('\n\n')
+                                        .filter(para => para.trim() !== '')
+                                        .map(para => `<p class="mb-2">${para}</p>`)
+                                        .join('');
+                                    
+                                    streamingContent.innerHTML = htmlContent || '<p class="mb-2">' + formattedResponse + '</p>';
+                                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                                }
+                            } catch (e) {
+                                console.error('解析响应数据出错:', e);
+                            }
+                        }
+                    }
+                }
+                
+                // 将完整响应添加到聊天历史
+                chatHistory.push({
+                    role: "assistant",
+                    content: formatAIResponse(fullResponse)
+                });
+                
+            } catch (error) {
+                console.error('API调用失败:', error);
+                
+                // 移除输入中指示器（如果存在）
+                const indicators = document.querySelectorAll('.typing-indicator');
+                indicators.forEach(ind => ind.remove());
+                
+                // 显示错误消息
+                addMessage(`抱歉，发生了一些错误:\n\n${error.message}`, false);
+            }
+        }
+        
+        // 发送按钮点击事件
+        sendBtn.addEventListener('click', function() {
+            sendMessage(chatInput.value);
+        });
+        
+        // 输入框回车事件
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage(chatInput.value);
+            }
+        });
+        
+        // 快捷问题点击事件
+        quickQuestions.forEach(button => {
+            button.addEventListener('click', function() {
+                sendMessage(this.textContent.trim());
+            });
+        });
+        
+        // 清空聊天记录
+        clearChatBtn.addEventListener('click', function() {
+            // 清空聊天容器，只保留第一条欢迎消息
+            while (chatContainer.childElementCount > 1) {
+                chatContainer.removeChild(chatContainer.lastChild);
+            }
+            
+            // 重置聊天历史
+            chatHistory = [
+                {
+                    role: "system",
+                    content: "你是一个专业的医疗健康助手，可以为用户提供健康建议和医疗咨询。请注意，你提供的是一般性的健康建议，不能替代专业医生的诊断。请在回答时使用段落格式，避免使用星号等特殊符号作为强调，而是使用自然语言表达。每个段落之间应当有明确的分隔。"
+                },
+                {
+                    role: "assistant",
+                    content: "您好！我是您的AI健康助手。\n\n我可以为您提供健康建议、解答健康问题，以及帮助您更好地管理健康。\n\n请问有什么我可以帮您的吗？"
+                }
+            ];
+        });
+    });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMind | 健康数据</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22d3ee',
+                        secondary: '#0891b2',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2129&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-value {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #22d3ee, #06b6d4);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .chart-grid {
+            background-image: radial-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* 隐藏滚动条但允许滚动 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* 图标颜色调整 */
+        .icon-light {
+            filter: invert(100%) brightness(1.5);
+        }
+        
+        .icon-primary {
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(155deg) brightness(100%);
+        }
+        
+        .card-highlight {
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+    </style>
+</head>
+<body class="text-light">
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <div class="glass-dark w-64 h-full flex flex-col">
+            <div class="p-6 flex items-center space-x-3 border-b border-white/10">
+                <div class="hexagon bg-primary w-10 h-10 flex items-center justify-center">
+                    <img src="icons/activity.svg" class="w-6 h-6 text-white icon-light" alt="Logo">
+                </div>
+                <h1 class="text-xl font-bold text-primary neon-glow">HealthMind</h1>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Dashboard">
+                            <span>健康仪表盘</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="healthdata.html" class="flex items-center p-3 rounded-lg bg-primary/20 neon-border">
+                            <img src="icons/alarm-clock.svg" class="w-5 h-5 mr-3 icon-light" alt="Health Data">
+                            <span>健康数据</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="activity.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 mr-3 icon-light" alt="Activity">
+                            <span>活动管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="diet.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/aperture.svg" class="w-5 h-5 mr-3 icon-light" alt="Diet">
+                            <span>饮食管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="sleep.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/alarm-clock-off.svg" class="w-5 h-5 mr-3 icon-light" alt="Sleep">
+                            <span>睡眠管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="community.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition">
+                            <img src="icons/align-center.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>健康社区</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="model.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/square-activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>AI健康助手</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-white/10">
+                <div class="glass-card p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                        <div class="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center mr-3">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="User">
+                        </div>
+                        <div>
+                            <h3 class="font-medium username-display"></h3>
+                            <p class="text-xs text-white/60">健康会员</p>
+                        </div>
+                    </div>
+                    <button class="w-full mt-2 py-1 rounded-lg bg-white/10 text-xs hover:bg-white/20 transition logout-btn">
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 p-6 overflow-y-auto hide-scrollbar">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-1">健康数据</h1>
+                    <p class="text-white/60">查看和管理您的健康指标数据</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="glass p-2 rounded-lg">
+                        <img src="icons/alarm-clock-plus.svg" class="w-5 h-5 icon-primary" alt="Add Data">
+                    </button>
+                    <button class="glass p-2 rounded-lg">
+                        <img src="icons/align-justify.svg" class="w-5 h-5 icon-primary" alt="Settings">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 数据类别选择 -->
+            <div class="flex space-x-4 mb-8 overflow-x-auto hide-scrollbar pb-2">
+                <button class="glass-card px-4 py-2 rounded-full bg-primary/20 neon-border flex items-center">
+                    <img src="icons/activity.svg" class="w-4 h-4 mr-2 icon-primary" alt="All">
+                    <span class="text-sm">全部数据</span>
+                </button>
+                <button class="glass-card px-4 py-2 rounded-full hover:bg-white/5 flex items-center">
+                    <img src="icons/accessibility.svg" class="w-4 h-4 mr-2 icon-light" alt="Weight">
+                    <span class="text-sm">体重</span>
+                </button>
+                <button class="glass-card px-4 py-2 rounded-full hover:bg-white/5 flex items-center">
+                    <img src="icons/activity.svg" class="w-4 h-4 mr-2 icon-light" alt="Blood Pressure">
+                    <span class="text-sm">血压</span>
+                </button>
+                <button class="glass-card px-4 py-2 rounded-full hover:bg-white/5 flex items-center">
+                    <img src="icons/aperture.svg" class="w-4 h-4 mr-2 icon-light" alt="Blood Sugar">
+                    <span class="text-sm">血糖</span>
+                </button>
+                <button class="glass-card px-4 py-2 rounded-full hover:bg-white/5 flex items-center">
+                    <img src="icons/alarm-clock.svg" class="w-4 h-4 mr-2 icon-light" alt="Heart Rate">
+                    <span class="text-sm">心率</span>
+                </button>
+                <button class="glass-card px-4 py-2 rounded-full hover:bg-white/5 flex items-center">
+                    <img src="icons/airplay.svg" class="w-4 h-4 mr-2 icon-light" alt="Body Fat">
+                    <span class="text-sm">体脂率</span>
+                </button>
+            </div>
+            
+            <!-- 数据趋势图表 -->
+            <div class="glass-card rounded-xl p-5 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-semibold">健康数据趋势</h3>
+                    <div class="flex space-x-2">
+                        <button class="text-xs px-3 py-1 rounded-full bg-primary/20 neon-border">周</button>
+                        <button class="text-xs px-3 py-1 rounded-full hover:bg-white/5">月</button>
+                        <button class="text-xs px-3 py-1 rounded-full hover:bg-white/5">年</button>
+                    </div>
+                </div>
+                <div class="h-80 chart-grid relative">
+                    <!-- 模拟图表 -->
+                    <svg class="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M0,50 C10,45 20,60 30,55 C40,50 50,40 60,45 C70,50 80,30 90,35 L90,100 L0,100 Z" fill="rgba(34, 211, 238, 0.1)"></path>
+                        <path d="M0,50 C10,45 20,60 30,55 C40,50 50,40 60,45 C70,50 80,30 90,35" fill="none" stroke="#22d3ee" stroke-width="0.5"></path>
+                        
+                        <path d="M0,70 C10,65 20,75 30,70 C40,65 50,60 60,65 C70,70 80,60 90,65" fill="none" stroke="#0891b2" stroke-width="0.5" stroke-dasharray="2"></path>
+                    </svg>
+                    
+                    <!-- 图表标签 -->
+                    <div class="absolute top-4 right-4 flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-primary rounded-full mr-2"></div>
+                            <span class="text-xs">体重 (kg)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-secondary rounded-full mr-2"></div>
+                            <span class="text-xs">体脂率 (%)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-white/60">
+                    <span>6月1日</span>
+                    <span>6月5日</span>
+                    <span>6月10日</span>
+                    <span>6月15日</span>
+                    <span>6月20日</span>
+                    <span>6月25日</span>
+                    <span>6月30日</span>
+                </div>
+            </div>
+            
+            <!-- 数据记录表格 -->
+            <div class="glass-card rounded-xl p-5 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-semibold">数据记录</h3>
+                    <button class="glass px-3 py-1 rounded-lg text-xs flex items-center">
+                        <img src="icons/alarm-clock-plus.svg" class="w-4 h-4 mr-1 icon-primary" alt="Add">
+                        <span>添加记录</span>
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto hide-scrollbar">
+                    <table class="w-full min-w-full">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="text-left py-3 px-4 text-sm font-medium">日期</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">体重 (kg)</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">体脂率 (%)</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">血压 (mmHg)</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">血糖 (mmol/L)</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">静息心率 (BPM)</th>
+                                <th class="text-left py-3 px-4 text-sm font-medium">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4 text-sm">2023-06-30</td>
+                                <td class="py-3 px-4 text-sm">68.5</td>
+                                <td class="py-3 px-4 text-sm">18.2</td>
+                                <td class="py-3 px-4 text-sm">120/80</td>
+                                <td class="py-3 px-4 text-sm">5.2</td>
+                                <td class="py-3 px-4 text-sm">72</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">编辑</button>
+                                        <button class="text-white/60 hover:text-white/80">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4 text-sm">2023-06-29</td>
+                                <td class="py-3 px-4 text-sm">68.7</td>
+                                <td class="py-3 px-4 text-sm">18.3</td>
+                                <td class="py-3 px-4 text-sm">118/78</td>
+                                <td class="py-3 px-4 text-sm">5.3</td>
+                                <td class="py-3 px-4 text-sm">74</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">编辑</button>
+                                        <button class="text-white/60 hover:text-white/80">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4 text-sm">2023-06-28</td>
+                                <td class="py-3 px-4 text-sm">68.9</td>
+                                <td class="py-3 px-4 text-sm">18.5</td>
+                                <td class="py-3 px-4 text-sm">122/82</td>
+                                <td class="py-3 px-4 text-sm">5.1</td>
+                                <td class="py-3 px-4 text-sm">73</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">编辑</button>
+                                        <button class="text-white/60 hover:text-white/80">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4 text-sm">2023-06-27</td>
+                                <td class="py-3 px-4 text-sm">69.1</td>
+                                <td class="py-3 px-4 text-sm">18.6</td>
+                                <td class="py-3 px-4 text-sm">121/81</td>
+                                <td class="py-3 px-4 text-sm">5.2</td>
+                                <td class="py-3 px-4 text-sm">75</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">编辑</button>
+                                        <button class="text-white/60 hover:text-white/80">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5">
+                                <td class="py-3 px-4 text-sm">2023-06-26</td>
+                                <td class="py-3 px-4 text-sm">69.3</td>
+                                <td class="py-3 px-4 text-sm">18.7</td>
+                                <td class="py-3 px-4 text-sm">120/80</td>
+                                <td class="py-3 px-4 text-sm">5.3</td>
+                                <td class="py-3 px-4 text-sm">72</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <div class="flex space-x-2">
+                                        <button class="text-primary hover:text-primary/80">编辑</button>
+                                        <button class="text-white/60 hover:text-white/80">删除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex justify-between items-center mt-4">
+                    <div class="text-sm text-white/60">显示 1-5 条，共 24 条</div>
+                    <div class="flex space-x-2">
+                        <button class="glass px-3 py-1 rounded-lg text-xs">上一页</button>
+                        <button class="glass px-3 py-1 rounded-lg text-xs bg-primary/20">1</button>
+                        <button class="glass px-3 py-1 rounded-lg text-xs">2</button>
+                        <button class="glass px-3 py-1 rounded-lg text-xs">3</button>
+                        <button class="glass px-3 py-1 rounded-lg text-xs">下一页</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 健康指标分析 -->
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="glass-card card-highlight rounded-xl p-5">
+                    <h3 class="font-semibold mb-4">健康指标分析</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>体重</span>
+                                <span class="text-primary">正常范围</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 60%"></div>
+                            </div>
+                            <p class="text-xs mt-2 text-white/60">您的体重指数(BMI)为22.1，处于健康范围内。</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>血压</span>
+                                <span class="text-primary">正常范围</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 70%"></div>
+                            </div>
+                            <p class="text-xs mt-2 text-white/60">您的血压平均值为120/80 mmHg，处于理想范围。</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>血糖</span>
+                                <span class="text-primary">正常范围</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 65%"></div>
+                            </div>
+                            <p class="text-xs mt-2 text-white/60">您的空腹血糖平均值为5.2 mmol/L，处于正常范围。</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>心率</span>
+                                <span class="text-primary">正常范围</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 75%"></div>
+                            </div>
+                            <p class="text-xs mt-2 text-white/60">您的静息心率平均值为72 BPM，处于健康范围。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-xl p-5">
+                    <h3 class="font-semibold mb-4">健康建议</h3>
+                    <div class="space-y-4">
+                        <div class="flex p-3 bg-primary/10 rounded-lg neon-border">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="Weight">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">体重管理</h4>
+                                <p class="text-xs text-white/60 mt-1">您的体重在过去一个月有轻微下降，继续保持健康饮食和适量运动。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 bg-white/5 rounded-lg">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/activity.svg" class="w-5 h-5 icon-primary" alt="Blood Pressure">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">血压管理</h4>
+                                <p class="text-xs text-white/60 mt-1">您的血压稳定，建议继续低盐饮食，保持规律作息，避免过度压力。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 bg-white/5 rounded-lg">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/aperture.svg" class="w-5 h-5 icon-primary" alt="Blood Sugar">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">血糖管理</h4>
+                                <p class="text-xs text-white/60 mt-1">您的血糖水平稳定，建议继续控制精制糖摄入，增加膳食纤维摄入。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 bg-white/5 rounded-lg">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/alarm-clock.svg" class="w-5 h-5 icon-primary" alt="Heart Rate">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">心率管理</h4>
+                                <p class="text-xs text-white/60 mt-1">您的静息心率略有下降，表明心肺功能有所改善，建议继续有氧运动。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 悬浮操作按钮 -->
+    <div class="fixed bottom-6 right-6 z-10">
+        <button class="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg hover:bg-secondary transition neon-border">
+            <img src="icons/alarm-clock-plus.svg" class="w-6 h-6 text-white" alt="Add Data">
+        </button>
+    </div>
+    
+    <!-- 简单的图表模拟脚本 -->
+    <script src="js/auth.js"></script>
+    <script>
+        // 模拟数据更新效果
+        setInterval(() => {
+            const progressBars = document.querySelectorAll('.progress-value');
+            progressBars.forEach(bar => {
+                const currentWidth = parseInt(bar.style.width);
+                const newWidth = Math.max(5, Math.min(100, currentWidth + (Math.random() > 0.5 ? 1 : -1)));
+                bar.style.width = `${newWidth}%`;
+            });
+        }, 3000);
+    </script>
+</body>
+</html>

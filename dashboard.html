@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMind | 数据挖掘健康管理系统</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22d3ee',
+                        secondary: '#0891b2',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2129&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-value {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #22d3ee, #06b6d4);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .chart-grid {
+            background-image: radial-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* 隐藏滚动条但允许滚动 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* 图标颜色调整 */
+        .icon-light {
+            filter: invert(100%) brightness(1.5);
+        }
+        
+        .icon-primary {
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(155deg) brightness(100%);
+        }
+        
+        .card-highlight {
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+    </style>
+</head>
+<body class="text-light">
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <div class="glass-dark w-64 h-full flex flex-col">
+            <div class="p-6 flex items-center space-x-3 border-b border-white/10">
+                <div class="hexagon bg-primary w-10 h-10 flex items-center justify-center">
+                    <img src="icons/activity.svg" class="w-6 h-6 text-white icon-light" alt="Logo">
+                </div>
+                <h1 class="text-xl font-bold text-primary neon-glow">HealthMind</h1>
+            </div>
+            
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center p-3 rounded-lg bg-primary/20 neon-border transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Dashboard">
+                            <span>健康仪表盘</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="healthdata.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/alarm-clock.svg" class="w-5 h-5 mr-3 icon-light" alt="Health Data">
+                            <span>健康数据</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="activity.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 mr-3 icon-light" alt="Activity">
+                            <span>活动管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="diet.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/aperture.svg" class="w-5 h-5 mr-3 icon-light" alt="Diet">
+                            <span>饮食管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="sleep.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/alarm-clock-off.svg" class="w-5 h-5 mr-3 icon-light" alt="Sleep">
+                            <span>睡眠管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="community.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/align-center.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>健康社区</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="community.html" class="flex items-center p-3 rounded-lg hover:bg-white/5 transition transform hover:-translate-y-1 hover:shadow-lg">
+                            <img src="icons/square-activity.svg" class="w-5 h-5 mr-3 icon-light" alt="Community">
+                            <span>AI健康助手</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-white/10">
+                <div class="glass-card p-3 rounded-lg">
+                    <div class="flex items-center mb-2">
+                        <div class="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center mr-3">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="User">
+                        </div>
+                        <div>
+                            <h3 class="font-medium username-display"></h3>
+                            <p class="text-xs text-white/60">健康会员</p>
+                        </div>
+                    </div>
+                    <button class="w-full mt-2 py-1 rounded-lg bg-white/10 text-xs hover:bg-white/20 transition logout-btn">
+                        退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 - 调整宽度和内边距 -->
+        <div class="flex-1 p-6 overflow-y-auto hide-scrollbar">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold mb-1">健康仪表盘</h1>
+                    <p class="text-white/60">欢迎回来主人！这是您的健康数据概览。</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="glass p-2 rounded-lg">
+                        <img src="icons/alarm-clock-plus.svg" class="w-5 h-5 icon-primary" alt="Notification">
+                    </button>
+                    <button class="glass p-2 rounded-lg">
+                        <img src="icons/align-justify.svg" class="w-5 h-5 icon-primary" alt="Settings">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 健康状态卡片 - 调整为更合理的网格布局 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card rounded-xl p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-white/60 text-sm">今日步数</p>
+                            <h2 class="text-2xl font-bold">8,742</h2>
+                        </div>
+                        <div class="hexagon bg-primary/20 p-2">
+                            <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="Steps">
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 75%"></div>
+                    </div>
+                    <p class="text-xs mt-2 text-white/60">目标: 10,000 步</p>
+                </div>
+                
+                <div class="glass-card rounded-xl p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-white/60 text-sm">心率</p>
+                            <h2 class="text-2xl font-bold">72 <span class="text-sm font-normal">BPM</span></h2>
+                        </div>
+                        <div class="hexagon bg-primary/20 p-2">
+                            <img src="icons/activity.svg" class="w-5 h-5 icon-primary" alt="Heart Rate">
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 60%"></div>
+                    </div>
+                    <p class="text-xs mt-2 text-white/60">正常范围: 60-100 BPM</p>
+                </div>
+                
+                <div class="glass-card rounded-xl p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-white/60 text-sm">睡眠时长</p>
+                            <h2 class="text-2xl font-bold">7.5 <span class="text-sm font-normal">小时</span></h2>
+                        </div>
+                        <div class="hexagon bg-primary/20 p-2">
+                            <img src="icons/alarm-clock.svg" class="w-5 h-5 icon-primary" alt="Sleep">
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 85%"></div>
+                    </div>
+                    <p class="text-xs mt-2 text-white/60">目标: 8 小时</p>
+                </div>
+                
+                <div class="glass-card card-highlight rounded-xl p-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-sm">整体健康评分</span>
+                        <span class="text-lg font-bold text-primary neon-glow">85</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 85%"></div>
+                    </div>
+                    <p class="text-xs mt-2 text-white/60">较上周提升3分</p>
+                    <div class="mt-3 flex items-center">
+                        <span class="text-xs px-2 py-1 rounded-full bg-primary/20 mr-2">良好</span>
+                        <span class="text-xs text-white/60">各项指标处于正常范围</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 活动趋势和健康目标 - 调整布局比例 -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card rounded-xl p-5 lg:col-span-3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">活动趋势</h3>
+                        <div class="flex space-x-2">
+                            <button class="text-xs px-3 py-1 rounded-full bg-primary/20 neon-border">周</button>
+                            <button class="text-xs px-3 py-1 rounded-full hover:bg-white/5">月</button>
+                            <button class="text-xs px-3 py-1 rounded-full hover:bg-white/5">年</button>
+                        </div>
+                    </div>
+                    <div class="h-64 chart-grid relative">
+                        <!-- 模拟图表 -->
+                        <div class="absolute bottom-0 left-0 w-full h-full flex items-end justify-between px-2">
+                            <div class="w-1/7 h-40% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-60% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-30% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-80% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-50% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-70% bg-primary/30 rounded-t-sm"></div>
+                            <div class="w-1/7 h-45% bg-primary/30 rounded-t-sm"></div>
+                        </div>
+                        <!-- 活动曲线 -->
+                        <svg class="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <path d="M0,70 C10,60 20,80 30,50 C40,20 50,50 60,30 C70,50 80,40 90,60 L90,100 L0,100 Z" fill="rgba(34, 211, 238, 0.2)"></path>
+                            <path d="M0,70 C10,60 20,80 30,50 C40,20 50,50 60,30 C70,50 80,40 90,60" fill="none" stroke="#22d3ee" stroke-width="0.5"></path>
+                        </svg>
+                        <!-- 数据点 -->
+                        <div class="absolute bottom-0 left-0 w-full h-full flex items-end justify-between px-2">
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-40% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-60% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-30% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-80% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-50% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-70% neon-border"></div>
+                            </div>
+                            <div class="w-1/7 flex justify-center">
+                                <div class="w-2 h-2 rounded-full bg-primary relative bottom-45% neon-border"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-2 text-xs text-white/60">
+                        <span>周一</span>
+                        <span>周二</span>
+                        <span>周三</span>
+                        <span>周四</span>
+                        <span>周五</span>
+                        <span>周六</span>
+                        <span>周日</span>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-xl p-5">
+                    <h3 class="font-semibold mb-6">健康目标</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>每日步数</span>
+                                <span>75%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>饮水量</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>睡眠质量</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>营养均衡</span>
+                                <span>70%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 健康建议、最近活动和数据洞察 - 调整为更均衡的布局 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card rounded-xl p-5">
+                    <h3 class="font-semibold mb-4">健康建议</h3>
+                    <div class="space-y-4">
+                        <div class="flex p-3 bg-primary/10 rounded-lg neon-border">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/activity.svg" class="w-5 h-5 icon-primary" alt="Activity">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">增加有氧运动</h4>
+                                <p class="text-xs text-white/60 mt-1">根据您的心率数据，建议每周增加2-3次中强度有氧运动，每次30分钟。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 bg-white/5 rounded-lg">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/alarm-clock.svg" class="w-5 h-5 icon-primary" alt="Sleep">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">优化睡眠时间</h4>
+                                <p class="text-xs text-white/60 mt-1">您的睡眠数据显示深度睡眠不足，建议调整睡前习惯，避免使用电子设备。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex p-3 bg-white/5 rounded-lg">
+                            <div class="mr-3">
+                                <div class="hexagon bg-primary/20 p-2">
+                                    <img src="icons/aperture.svg" class="w-5 h-5 icon-primary" alt="Diet">
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-sm">增加蛋白质摄入</h4>
+                                <p class="text-xs text-white/60 mt-1">根据您的饮食记录，蛋白质摄入略低于推荐值，建议适当增加鱼类、豆类等食物。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-xl p-5">
+                    <h3 class="font-semibold mb-4">最近活动</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                <img src="icons/accessibility.svg" class="w-5 h-5 icon-primary" alt="Run">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium text-sm">晨跑</h4>
+                                    <span class="text-xs text-white/60">今天 07:30</span>
+                                </div>
+                                <p class="text-xs text-white/60">5.2公里 · 28分钟 · 320卡路里</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                <img src="icons/activity.svg" class="w-5 h-5 icon-primary" alt="Weight">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium text-sm">体重记录</h4>
+                                    <span class="text-xs text-white/60">昨天 20:15</span>
+                                </div>
+                                <p class="text-xs text-white/60">68.5公斤 · 较上次-0.3公斤</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                <img src="icons/aperture.svg" class="w-5 h-5 icon-primary" alt="Diet">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium text-sm">饮食记录</h4>
+                                    <span class="text-xs text-white/60">昨天 12:30</span>
+                                </div>
+                                <p class="text-xs text-white/60">午餐 · 沙拉+鸡胸肉 · 450卡路里</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                                <img src="icons/alarm-clock.svg" class="w-5 h-5 icon-primary" alt="Sleep">
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-medium text-sm">睡眠记录</h4>
+                                    <span class="text-xs text-white/60">昨天 06:00</span>
+                                </div>
+                                <p class="text-xs text-white/60">7.5小时 · 深度睡眠2.3小时</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card card-highlight rounded-xl p-5">
+                    <h3 class="font-semibold mb-4">数据洞察</h3>
+                    <h4 class="text-sm font-medium mb-3">健康趋势分析</h4>
+                    <p class="text-xs text-white/60 mb-3">基于您过去30天的数据，系统发现以下健康趋势：</p>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2 mt-0.5">
+                                <img src="icons/a-arrow-up.svg" class="w-3 h-3 icon-primary" alt="Trend Up">
+                            </div>
+                            <div>
+                                <p class="text-xs">您的睡眠质量呈上升趋势，深度睡眠时间增加了12%。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2 mt-0.5">
+                                <img src="icons/a-arrow-down.svg" class="w-3 h-3 icon-primary" alt="Trend Down">
+                            </div>
+                            <div>
+                                <p class="text-xs">您的静息心率下降了5%，表明心肺功能有所改善。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2 mt-0.5">
+                                <img src="icons/activity.svg" class="w-3 h-3 icon-primary" alt="Activity">
+                            </div>
+                            <div>
+                                <p class="text-xs">您的日均步数较上月增加了1,200步，保持良好活动水平。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full mt-4 py-2 rounded-lg bg-primary/20 text-xs font-medium hover:bg-primary/30 transition neon-border">
+                        查看详细分析
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 即将到来的活动 - 调整为更灵活的布局 -->
+            <div class="glass-card card-highlight rounded-xl p-5 mb-8">
+                <h3 class="font-semibold mb-4">即将到来的活动</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card rounded-xl p-3" style="background: rgba(34, 211, 238, 0.05);">
+                        <div class="flex items-center mb-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                                <img src="icons/accessibility.svg" class="w-4 h-4 icon-primary" alt="Yoga">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">瑜伽课程</h4>
+                                <p class="text-xs text-white/60">明天 18:30</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-xl p-3" style="background: rgba(34, 211, 238, 0.05);">
+                        <div class="flex items-center mb-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                                <img src="icons/activity.svg" class="w-4 h-4 icon-primary" alt="Doctor">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">体检预约</h4>
+                                <p class="text-xs text-white/60">周五 10:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-xl p-3" style="background: rgba(34, 211, 238, 0.05);">
+                        <div class="flex items-center mb-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                                <img src="icons/align-center.svg" class="w-4 h-4 icon-primary" alt="Community">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">健康社区活动</h4>
+                                <p class="text-xs text-white/60">下周六 09:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 新增活动卡片 -->
+                    <div class="glass-card rounded-xl p-3" style="background: rgba(34, 211, 238, 0.05);">
+                        <div class="flex items-center mb-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                                <img src="icons/aperture.svg" class="w-4 h-4 icon-primary" alt="Nutrition">
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium">营养咨询</h4>
+                                <p class="text-xs text-white/60">下周三 14:30</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 新增健康资讯模块 -->
+            <div class="glass-card rounded-xl p-5 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold">健康资讯</h3>
+                    <button class="text-xs px-3 py-1 rounded-full bg-primary/20 hover:bg-primary/30 transition">查看全部</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="glass-card rounded-xl p-4 hover:transform hover:-translate-y-1 transition duration-300">
+                        <div class="h-32 rounded-lg mb-3 bg-primary/10 overflow-hidden">
+                            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                <img src="icons/activity.svg" class="w-10 h-10 icon-primary" alt="Health">
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-medium mb-1">如何提高睡眠质量</h4>
+                        <p class="text-xs text-white/60 mb-2">良好的睡眠习惯对健康至关重要，本文介绍几种简单有效的方法...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-primary">阅读全文</span>
+                            <span class="text-xs text-white/60">2天前</span>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-xl p-4 hover:transform hover:-translate-y-1 transition duration-300">
+                        <div class="h-32 rounded-lg mb-3 bg-primary/10 overflow-hidden">
+                            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                <img src="icons/accessibility.svg" class="w-10 h-10 icon-primary" alt="Exercise">
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-medium mb-1">居家健身指南</h4>
+                        <p class="text-xs text-white/60 mb-2">无需器械，15分钟高效锻炼方案，适合各年龄段人群...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-primary">阅读全文</span>
+                            <span class="text-xs text-white/60">4天前</span>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-xl p-4 hover:transform hover:-translate-y-1 transition duration-300">
+                        <div class="h-32 rounded-lg mb-3 bg-primary/10 overflow-hidden">
+                            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                                <img src="icons/aperture.svg" class="w-10 h-10 icon-primary" alt="Nutrition">
+                            </div>
+                        </div>
+                        <h4 class="text-sm font-medium mb-1">平衡饮食的重要性</h4>
+                        <p class="text-xs text-white/60 mb-2">了解如何通过合理搭配食物，获取全面均衡的营养...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-primary">阅读全文</span>
+                            <span class="text-xs text-white/60">1周前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 悬浮操作按钮 -->
+    <div class="fixed bottom-6 right-6 z-10">
+        <button class="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg hover:bg-secondary transition neon-border">
+            <img src="icons/a-arrow-up.svg" class="w-6 h-6 text-white" alt="Add">
+        </button>
+    </div>
+    
+    <!-- 简单的图表模拟脚本 -->
+    <script src="js/auth.js"></script>
+</body>
+</html> 

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMind | 登录</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22d3ee',
+                        secondary: '#0891b2',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2129&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+        }
+        
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .icon-primary {
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(155deg) brightness(100%);
+        }
+        
+        .icon-light {
+            filter: invert(100%) brightness(1.5);
+        }
+    </style>
+</head>
+<body class="text-light flex items-center justify-center h-screen">
+    <div class="glass-dark rounded-xl p-8 w-full max-w-md">
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center space-x-3">
+                <div class="hexagon bg-primary w-12 h-12 flex items-center justify-center">
+                    <img src="icons/activity.svg" class="w-7 h-7 text-white icon-light" alt="Logo">
+                </div>
+                <h1 class="text-2xl font-bold text-primary neon-glow">HealthMind</h1>
+            </div>
+        </div>
+        
+        <h2 class="text-xl font-semibold mb-6 text-center">登录账户</h2>
+        
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium mb-2">用户名</label>
+                <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg glass border-0 focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="请输入用户名" required>
+            </div>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium mb-2">密码</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-3 rounded-lg glass border-0 focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="请输入密码" required>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/50">
+                    <label for="remember" class="ml-2 block text-sm">记住我</label>
+                </div>
+                <a href="#" class="text-sm text-primary hover:text-primary/80">忘记密码?</a>
+            </div>
+            
+            <button type="submit" class="w-full py-3 rounded-lg bg-primary hover:bg-secondary transition neon-border font-medium">
+                登录
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-sm text-white/60">
+                还没有账户? <a href="register.html" class="text-primary hover:text-primary/80">立即注册</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            // 从localStorage获取用户数据
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // 查找匹配的用户
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // 登录成功
+                // 存储登录状态到本地存储
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                
+                // 如果选择了"记住我"，设置更长的过期时间
+                if (remember) {
+                    // 在实际应用中，这里应该使用更安全的方式存储登录状态
+                    localStorage.setItem('rememberMe', 'true');
+                }
+                
+                // 跳转到仪表盘页面
+                window.location.href = 'dashboard.html';
+            } else {
+                // 登录失败
+                alert('用户名或密码错误，请重试。');
+            }
+        });
+        
+        // 检查是否已登录，如果已登录则直接跳转到仪表盘
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMind | 注册</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22d3ee',
+                        secondary: '#0891b2',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2129&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+        }
+        
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .icon-primary {
+            filter: invert(80%) sepia(50%) saturate(500%) hue-rotate(155deg) brightness(100%);
+        }
+        
+        .icon-light {
+            filter: invert(100%) brightness(1.5);
+        }
+    </style>
+</head>
+<body class="text-light flex items-center justify-center h-screen">
+    <div class="glass-dark rounded-xl p-8 w-full max-w-md">
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center space-x-3">
+                <div class="hexagon bg-primary w-12 h-12 flex items-center justify-center">
+                    <img src="icons/activity.svg" class="w-7 h-7 text-white icon-light" alt="Logo">
+                </div>
+                <h1 class="text-2xl font-bold text-primary neon-glow">HealthMind</h1>
+            </div>
+        </div>
+        
+        <h2 class="text-xl font-semibold mb-6 text-center">注册账户</h2>
+        
+        <form id="registerForm" class="space-y-5">
+            <div>
+                <label for="username" class="block text-sm font-medium mb-2">用户名</label>
+                <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg glass border-0 focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="请输入用户名" required>
+                <p id="usernameError" class="text-red-400 text-xs mt-1 hidden">用户名不能为空</p>
+            </div>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium mb-2">密码</label>
+                <input type="password" id="password" name="password" class="w-full px-4 py-3 rounded-lg glass border-0 focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="请输入密码" required>
+                <p id="passwordError" class="text-red-400 text-xs mt-1 hidden">密码长度至少为6位</p>
+            </div>
+            
+            <div>
+                <label for="confirmPassword" class="block text-sm font-medium mb-2">确认密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="w-full px-4 py-3 rounded-lg glass border-0 focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="请再次输入密码" required>
+                <p id="confirmPasswordError" class="text-red-400 text-xs mt-1 hidden">两次输入的密码不一致</p>
+            </div>
+            
+            <div class="flex items-center">
+                <input id="terms" name="terms" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/50" required>
+                <label for="terms" class="ml-2 block text-sm">
+                    我已阅读并同意 <a href="#" class="text-primary hover:text-primary/80">服务条款</a> 和 <a href="#" class="text-primary hover:text-primary/80">隐私政策</a>
+                </label>
+                <p id="termsError" class="text-red-400 text-xs mt-1 hidden">请同意服务条款和隐私政策</p>
+            </div>
+            
+            <button type="submit" class="w-full py-3 rounded-lg bg-primary hover:bg-secondary transition neon-border font-medium">
+                注册
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-sm text-white/60">
+                已有账户? <a href="login.html" class="text-primary hover:text-primary/80">立即登录</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 重置所有错误提示
+            document.querySelectorAll('.text-red-400').forEach(el => el.classList.add('hidden'));
+            
+            // 获取表单数据
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // 表单验证
+            let isValid = true;
+            
+            // 验证用户名
+            if (!username) {
+                document.getElementById('usernameError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            
+            // 验证密码
+            if (!password || password.length < 6) {
+                document.getElementById('passwordError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // 验证确认密码
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // 验证服务条款
+            if (!terms) {
+                document.getElementById('termsError').classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // 如果验证通过，模拟注册过程
+            if (isValid) {
+                // 在实际应用中，这里应该发送请求到后端API进行注册
+                // 这里仅做模拟，将用户信息存储在localStorage中
+                
+                // 检查用户名是否已存在
+                const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                const userExists = existingUsers.some(user => user.username === username);
+                
+                if (userExists) {
+                    alert('用户名已存在，请选择其他用户名');
+                    return;
+                }
+                
+                // 添加新用户
+                existingUsers.push({
+                    username,
+                    password, // 注意：实际应用中不应该明文存储密码
+                    registeredAt: new Date().toISOString()
+                });
+                
+                // 保存用户数据
+                localStorage.setItem('users', JSON.stringify(existingUsers));
+                
+                // 显示注册成功消息
+                alert('注册成功！请登录您的账户。');
+                
+                // 跳转到登录页面
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html> 
